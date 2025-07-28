@@ -45,19 +45,27 @@ $(endif)
         <div class="main">
             <div class="wrap">
                 $(if login-by == 'trial')
-                    <h1>Hello, Guest user!</h1>
-                $(elif login-by != 'mac')
-                    <h1>Hi, $(username)!</h1>
-                $(endif)                
+                    <h1>❤️ Thank you for your payment</h1>
+                    <p>You are now connected as a Guest user. Have fun and enjoy your internet session!</p>
+                $(elif login-by == 'http-chap')
+                    <h1>👋 Welcome, $(username)!</h1>
+                    <p>Glad you are here. Enjoy your time online.</p>
+                $(elif login-by == 'http-pap')
+                    <h1>👋 Welcome, $(username)!</h1>
+                    <p>Glad you're here. Enjoy your time online.</p>
+                $(else)
+                <h1>👋 Welcome back</h1>
+                <p>Good to see you again. Enjoy your connection.</p>
+                $(endif)
 
                 <form action="$(link-logout)" name="logout" onSubmit="return openLogout()">
                     <table>
-                        <tr><td>IP address</td><td>$(ip)</td></tr>
-                        <tr><td>Bytes up / down</td><td>$(bytes-in-nice) / $(bytes-out-nice)</td></tr>
+                        <tr><td>IP Address</td><td>$(ip)</td></tr>
+                        <tr><td>Traffic data</td><td>📥: $(bytes-in-nice) / 📤: $(bytes-out-nice)</td></tr>
                     $(if session-time-left)
-                        <tr><td>Connected / left</td><td>$(uptime) / $(session-time-left)</td></tr>
+                        <tr><td>Remaining time</td><td>$(session-time-left)</td></tr>
                     $(else)
-                        <tr><td>Connected</td><td>$(uptime)</td></tr>
+                        <tr><td>Session time</td><td>$(uptime)</td></tr>
                     $(endif)
                     $(if blocked == 'yes')
                         <tr><td>Status</td><td>
@@ -71,9 +79,6 @@ $(endif)
                     <!-- user manager link. if user manager resides on other router, replace $(hostname) by its address
                     <button onclick="document.location='http://$(hostname)/user?subs='; return false;">status</button>
                     <-- end of user manager link -->
-                    <div class="sbt">
-                        <input type="button" value="Access Yuuki0 Server" onclick="window.open('https://y.cloud','_blank')">
-                    </div>
                     <div class="sbt">
                         <input type="dc" value="Log out" onclick="location='$(link-logout)'">
                     </div>

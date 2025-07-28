@@ -91,6 +91,11 @@ h1{
 	color:#fff;
 	font-size:24px!important
 }
+p{
+	text-align:center;
+	color:#fff;
+	padding-bottom: 10px;
+}
 *{
 	-webkit-box-sizing:border-box;
 	box-sizing:border-box;
@@ -144,7 +149,7 @@ form{
 .info{
 	color:#fff;
 	text-align:center;
-	margin-bottom:30px
+	/* margin-bottom:30px */
 }
 input{
 	outline:0;
@@ -157,7 +162,7 @@ input:focus{
 }
 input[type=password],input[type=text]{
 	width:100%;
-	border:1px solid background-color: rgba(255,255,255,.8);
+	border:1px solid #b0b0b0;
 	height:44px;
 	padding:3px 20px 3px 40px;
 	margin-bottom:20px;
@@ -272,6 +277,31 @@ table td:first-child{
 .info.alert{
 	color:#da3d41
 }
+.cta-button {
+	display: inline-block;
+	margin-top: 10px;
+	padding: 14px 10px;
+	background-color: #ff8c00;
+	color: #fff;
+	border:0;
+	width:100%;
+	font-size: 16px;
+	border-radius: 6px;
+	text-decoration: none;
+	cursor:pointer;
+	text-align: center;
+	-webkit-transition:background .3s ease-in-out;
+	transition:background .3s ease-in-out;
+}
+.cta-button:hover {
+	background-color: #b35f00;
+}
+.highlight {
+	font-weight: bold;
+	font-size: 18px;
+	text-align: center;
+}
+
 @media (min-width:576px){
 	.wrap{
 		width:410px
@@ -279,6 +309,213 @@ table td:first-child{
 	*{
 		font-size:14px!important
 }
+}
+
+/* Payment */
+.payment-methods {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 10px;
+	margin-top: 20px;
+}
+
+.payment-box {
+	flex: 1 1 calc(30% - 10px);
+	max-width: calc(30% - 10px);
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	padding: 10px;
+	text-align: center;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 80px;
+	background-color: white;
+}
+
+.payment-box.selected {
+	border-color: #0dcaf0;
+	background-color: #e8f0f5;
+}
+
+.payment-box img {
+	max-width: 86px;
+	max-height: 80px;
+	object-fit: contain;
+}
+
+.submit-wrap {
+	text-align: center;
+	margin-top: 20px;
+}
+
+input[type="submit"] {
+	padding: 10px 20px;
+}
+
+.spinner {
+  margin: 0 auto 20px auto;
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.modal {
+	position: fixed;
+	inset: 0;
+	background-color: rgba(0,0,0,0.6);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 9999;
+}
+
+.modal.hidden {
+	display: none;
+}
+
+.modal-content {
+	background: #ffffff;
+	padding: 30px 25px;
+	border-radius: 12px;
+	max-width: 420px;
+	width: 90%;
+	box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+	position: relative;
+	text-align: center;
+	animation: popupFadeIn 0.4s ease-in-out;
+}
+
+.modal-content h2 {
+	font-size: 1.8em;
+	margin-bottom: 16px;
+	color: #dc3545;
+}
+
+.modal-content #errorMessage {
+	font-size: 1em;
+	margin-bottom: 24px;
+	color: #333;
+	line-height: 1.5;
+}
+
+.modal-content #errorDetail {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: -12px;
+  margin-bottom: 20px;
+}
+
+.modal-content button {
+	background-color: #0dcaf0;
+	border: none;
+	padding: 10px 24px;
+	color: white;
+	font-weight: 600;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: background-color 0.25s ease;
+}
+
+.modal-content button:hover {
+	background-color: #0bbbe0;
+}
+
+.close-button {
+	position: absolute;
+	top: 12px;
+	right: 16px;
+	font-size: 28px;
+	color: #999;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.close-button:hover {
+	color: #333;
+}
+
+@keyframes popupFadeIn {
+	from {
+	transform: scale(0.9);
+	opacity: 0;
+	}
+	to {
+	transform: scale(1);
+	opacity: 1;
+	}
+}
+
+@keyframes popupFadeOut {
+	from {
+	transform: scale(1);
+	opacity: 1;
+	}
+	to {
+	transform: scale(0.9);
+	opacity: 0;
+	}
+}
+
+.modal.fade-out .modal-content {
+	animation: popupFadeOut 0.3s ease-in-out forwards;
+}
+
+@media only screen and (max-height: 992px) {
+	.payment-box {
+		flex: 1 1 calc(33% - 10px);
+		max-width: calc(33% - 10px);
+		padding: 10px;
+		height: 80px;
+	}
+	
+	.payment-box img {
+		width: auto;
+		height: 80%;
+	}
+}
+
+@media only screen and (max-height: 768px) {
+	.payment-box {
+		flex: 1 1 calc(33% - 10px);
+		max-width: calc(33% - 10px);
+		padding: 5px;
+		height: 64px;
+	}
+	
+	.payment-box img {
+		width: auto;
+		height: 72%;
+	}
+}
+
+@media only screen and (max-width: 576px) {
+	.payment-box {
+		flex: 1 1 calc(33% - 10px);
+		max-width: calc(33% - 10px);
+		padding: 5px;
+		height: 78px;
+	}
+	
+	.payment-box img {
+		width: auto;
+		height: 64%;
+	}
+
+	.quotes {
+		font-size: 72%;
+	}
 }
 
 /*Slide Show*/

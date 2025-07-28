@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="pragma" content="no-cache" />
+  <meta http-equiv="expires" content="-1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>[Yuuki0] NETWORK - Payment Method</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body class="bgstill">
+
+  <!-- POPUP ERROR -->
+  <div id="errorPopup" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-button" onclick="closePopup()">&times;</span>
+      <h2>🚫 Error</h2>
+      <p id="errorMessage">Something went wrong.</p>
+      <button onclick="redirectToLogin()">Back to Login</button>
+    </div>
+  </div>
+
+  <div class="ie-fixMinHeight">
+    <div class="main">
+      <div class="wrap animated fadeIn">
+        <form id="paymentForm" method="GET" action="https://hotspot.yuuki0.net/pay">
+          
+          <!-- Hidden fields for token and auth -->
+          <input type="hidden" name="mac" value="$(mac-esc)">
+          <input type="hidden" name="dst" value="$(link-orig-esc)">
+          <input type="hidden" name="timestamp" value="">
+          <input type="hidden" name="token" value="">
+          <input type="hidden" name="method" id="method" value="">
+
+          <h1>Choose Payment Method</h1>
+          <p class="info">You will buy an unlimited hotspot internet package</p>
+
+          <div class="payment-methods">
+            <!-- List of payment methods -->
+            <div class="payment-box" data-method="gopay">
+              <img src="img/payments/gopay.svg" alt="GoPay">
+            </div>
+            <div class="payment-box" data-method="shopeepay">
+              <img src="img/payments/shopeepay.svg" alt="ShopeePay">
+            </div>
+            <div class="payment-box" data-method="other_qris">
+              <img src="img/payments/qris.svg" alt="QRIS">
+            </div>
+            <div class="payment-box" data-method="echannel">
+              <img src="img/payments/mandiri.svg" alt="Mandiri">
+            </div>
+            <div class="payment-box" data-method="bri_va">
+              <img src="img/payments/bri.svg" alt="BRI">
+            </div>
+            <div class="payment-box" data-method="cimb_va">
+              <img src="img/payments/cimb.svg" alt="CIMB Niaga">
+            </div>
+            <div class="payment-box" data-method="bni_va">
+              <img src="img/payments/bni.svg" alt="BNI">
+            </div>
+            <div class="payment-box" data-method="permata_va">
+              <img src="img/payments/permata.svg" alt="Permata">
+            </div>
+            <div class="payment-box" data-method="other_va">
+              <b>Other Virtual Accounts</b>
+            </div>
+          </div>
+
+          <div class="submit-wrap">
+            <input type="submit" value="Proceed to Payment" disabled id="submitBtn" />
+          </div>
+        </form>
+        <br>
+        <p class="info bt">Powered by [Yuuki0] NETWORK</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Midtrans SNAP (Sandbox) -->
+  <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="YOUR_SANDBOX_CLIENT_KEY"></script>
+
+  <!-- Midtrans SNAP (Production) -->
+  <!-- <script src="https://app.midtrans.com/snap/snap.js" data-client-key="YOUR_PRODUCTION_CLIENT_KEY"></script> -->
+
+  <!-- Utility Error Popup -->
+  <script>
+    function showError(message) {
+      const popup = document.getElementById("errorPopup");
+      const messageBox = document.getElementById("errorMessage");
+
+      messageBox.textContent = message;
+      popup.classList.remove("hidden", "fade-out");
+      popup.classList.add("fade-in");
+    }
+
+    function closePopup() {
+      const modal = document.getElementById("errorPopup");
+      modal.classList.remove("fade-in");
+      modal.classList.add("fade-out");
+      setTimeout(() => {
+        modal.classList.add("hidden");
+        modal.classList.remove("fade-out");
+      }, 300);
+    }
+
+    function redirectToLogin() {
+      window.location.href = "$(link-login)";
+    }
+  </script>
+
+  <!-- Interaction UI -->
+  <script>
+    const boxes = document.querySelectorAll('.payment-box');
+    const methodInput = document.getElementById('method');
+    const submitBtn = document.getElementById('submitBtn');
+
+    boxes.forEach(box => {
+      box.addEventListener('click', () => {
+        boxes.forEach(b => b.classList.remove('selected'));
+        box.classList.add('selected');
+        methodInput.value = box.dataset.method;
+        submitBtn.disabled = false;
+      });
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    document.querySelector('input[name="mac"]').value = params.get('mac');
+    document.querySelector('input[name="timestamp"]').value = params.get('timestamp');
+    document.querySelector('input[name="token"]').value = params.get('token');
+  </script>
+
+  <!-- Payment Process -->
+  <script>
+    const form = document.getElementById("paymentForm");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const params = new URLSearchParams(new FormData(form));
+      const apiURL = form.action + "?" + params.toString();
+
+      try {
+        const res = await fetch(apiURL);
+        const contentType = res.headers.get("Content-Type");
+
+        if (contentType && contentType.includes("application/json")) {
+          const data = await res.json();
+
+          if (!data.token) {
+            console.warn("Failed to generate SNAP token from server.");
+            showError("An error occurred while establishing a connection to Payment. Please try again.");
+            return;
+          }
+
+          snap.pay(data.token, {
+            onSuccess: function (result) {
+              const mac = params.get("mac");
+              const dst = params.get("dst");
+              window.location.href = `https://hotspot.yuuki0.net/verify?order_id=${result.order_id}&mac=${mac}&dst=${encodeURIComponent(dst)}`;
+            },
+            onPending: function () {
+              showError("Please complete the transaction in your app.");
+            },
+            onError: function () {
+              showError("The transaction failed to be processed by the system. Please try another payment method or check your connection.");
+            },
+            onClose: function () {
+              showError("You closed the payment page before completing the transaction.");
+            }
+          });
+
+        } else {
+          const text = await res.text();
+
+          if (text.includes("Token expired")) {
+            showError("The payment session has expired. Please return to the login page to restart.");
+          } else if (text.includes("Invalid token")) {
+            showError("Invalid token. Data manipulation may have occurred or the session has changed.");
+          } else if (text.includes("Invalid payment method")) {
+            showError("The payment method you selected is not available.");
+          } else if (text.includes("Missing required parameters")) {
+            showError("Device information not found. Please restart from the login page.");
+          } else {
+            showError("An unexpected error occurred. Please try again in a moment.");
+          }
+        }
+      } catch (err) {
+        console.error("Failed to process request:", err);
+        showError("A problem occurred contacting the server. Please check your internet connection or try again in a moment.");
+      }
+    });
+  </script>
+</body>
+</html>

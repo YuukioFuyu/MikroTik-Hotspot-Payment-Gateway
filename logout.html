@@ -20,21 +20,35 @@
     <div class="ie-fixMinHeight">
         <div class="main">
             <div class="wrap">
-                <h1>You have just logged out!</h1> 
-                <table>  
-                    <tr><td>Username</td><td>$(username)</td></tr>
-                    <tr><td>IP address</td><td>$(ip)</td></tr>
-                    <tr><td>MAC address</td><td>$(mac)</td></tr>
+                <h1>You just logged out!</h1> 
+                $(if login-by == 'trial')
+                    <p>Thank you for using our service. You can still login once again if your session time has not expired.</p>
+                $(else)
+                $(endif)
+                <table>
+                    $(if login-by == 'http-chap')
+                        <tr><td>Username</td><td>$(username)</td></tr>
+                    $(elif login-by == 'http-pap')
+                        <tr><td>Username</td><td>$(username)</td></tr>
+                    $(else)
+                    $(endif)
+                    <tr><td>IP Address</td><td>$(ip)</td></tr>
+                    $(if login-by == 'http-chap')
+                        <tr><td>MAC Address</td><td>$(mac)</td></tr>
+                    $(elif login-by == 'http-pap')
+                        <tr><td>MAC Address</td><td>$(mac)</td></tr>
+                    $(else)
+                    $(endif)
                     <tr><td>Session time</td><td>$(uptime)</td></tr>
                     $(if session-time-left)
-                    <tr><td>Time left</td><td>$(session-time-left)</td></tr>
+                    <tr><td>Remaining time</td><td>$(session-time-left)</td></tr>
                     $(endif)
-                    <tr><td>Bytes up / down:</td><td>$(bytes-in-nice) / $(bytes-out-nice)</td></tr>
+                    <tr><td>Traffic data</td><td>📥: $(bytes-in-nice) / 📤: $(bytes-out-nice)</td></tr>
                 </table>
 
 
                 <form action="$(link-login)" name="login" onSubmit="return openLogin()">
-                <input type="submit" value="Log in">
+                <input type="submit" value="Log in Again">
                 </form>
             </div>
         </div>
